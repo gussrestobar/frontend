@@ -11,17 +11,16 @@ const Mesas = () => {
   const [editandoId, setEditandoId] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mesaAEliminar, setMesaAEliminar] = useState(null);
-  const API_URL = import.meta.env.VITE_API_URL;
 
   const obtenerMesas = async () => {
-    const res = await axios.get(`${API_URL}/api/mesas/${tenantId}`);
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/mesas/${tenantId}`);
     setMesas(res.data);
   };
 
   const guardarMesa = async (e) => {
     e.preventDefault();
     if (editandoId) {
-      await axios.put(`${API_URL}/api/mesas/${editandoId}`, form);
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/mesas/${editandoId}`, form);
       setEditandoId(null);
     } else {
       await axios.post('${API_URL}/api/mesas', form);
@@ -41,7 +40,7 @@ const Mesas = () => {
   };
 
   const eliminarMesa = async () => {
-    await axios.delete(`${API_URL}/api/mesas/${mesaAEliminar.id}`);
+    await axios.delete(`${import.meta.env.VITE_API_URL}/api/mesas/${mesaAEliminar.id}`);
     setMostrarModal(false);
     setMesaAEliminar(null);
     obtenerMesas();

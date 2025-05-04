@@ -21,9 +21,8 @@ const Menu = () => {
     imagen_url: '',
     tenant_id: tenantId
   });
-  const API_URL = import.meta.env.VITE_API_URL;
   const obtenerPlatos = async () => {
-    const res = await axios.get(`${API_URL}/api/menu/${tenantId}`);
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/menu/${tenantId}`);
     setPlatos(res.data);
   };
 
@@ -35,7 +34,7 @@ const Menu = () => {
   const guardarPlato = async (e) => {
     e.preventDefault();
     if (editando !== null) {
-      await axios.put(`${API_URL}/api/menu/${editando}`, nuevoPlato);
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/menu/${editando}`, nuevoPlato);
       setEditando(null);
     } else {
       await axios.post('${API_URL}/api/menu', nuevoPlato);
@@ -70,7 +69,7 @@ const Menu = () => {
   };
 
   const eliminarPlato = async () => {
-    await axios.delete(`${API_URL}/api/menu/${platoAEliminar.id}`);
+    await axios.delete(`${import.meta.env.VITE_API_URL}/api/menu/${platoAEliminar.id}`);
     setMostrarModal(false);
     setPlatoAEliminar(null);
     obtenerPlatos();

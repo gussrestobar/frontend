@@ -15,7 +15,7 @@ const ResetPassword = () => {
     setError('');
 
     try {
-      await axios.post('${API_URL}/api/users/reset-password', { token, nuevaPassword });
+      await axios.post('${import.meta.env.VITE_API_URL}/api/users/reset-password', { token, nuevaPassword });
       setMensaje('¡Contraseña actualizada! Redirigiendo al login...');
       setTimeout(() => navigate('/'), 3000);
     } catch (err) {
