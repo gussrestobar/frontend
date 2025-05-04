@@ -10,13 +10,14 @@ const Dashboard = () => {
   const [nombreSucursal, setNombreSucursal] = useState('');
   const usuario = JSON.parse(localStorage.getItem('usuario'));
   const tenantId = usuario?.tenant_id;
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   useEffect(() => {
     const fetchResumen = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/reservas/resumen/${tenantId}`);
+        const res = await axios.get(`${API_URL}/reservas/resumen/${tenantId}`);
         setResumen(res.data);
       } catch (err) {
         console.error('Error al obtener resumen:', err);
@@ -25,7 +26,7 @@ const Dashboard = () => {
 
     const fetchSucursal = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/tenants/${tenantId}`);
+        const res = await axios.get(`${API_URL}/api/tenants/${tenantId}`);
         setNombreSucursal(res.data.nombre);
       } catch (err) {
         console.error('Error al obtener el nombre de la sucursal:', err);

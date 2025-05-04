@@ -23,11 +23,14 @@ const Login = () => {
 
   // Obtener sucursales desde backend
   useEffect(() => {
-    axios.get('http://localhost:3000/api/tenants').then(res => {
-      setSucursales(res.data);
-    });
+    const apiUrl = import.meta.env.VITE_API_URL;
+    axios.get(`${apiUrl}/api/tenants`)
+      .then(res => setSucursales(res.data))
+      .catch(err => {
+        console.error('Error al obtener sucursales:', err);
+      });
   }, []);
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje('');
