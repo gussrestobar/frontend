@@ -2,8 +2,8 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-// Asegurar que la URL base incluya /api
-const baseURL = `${API_URL}/api`;
+// Usar la URL base sin el prefijo /api
+const baseURL = API_URL;
 
 const api = axios.create({
   baseURL,
