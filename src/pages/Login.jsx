@@ -43,12 +43,10 @@ const Login = () => {
         setMensaje('¡Usuario registrado con éxito!');
         const res = await loginUsuario({ email, password });
         localStorage.setItem('usuario', JSON.stringify(res.data.user));
-        localStorage.setItem('tenantId', res.data.tenantId);
         navigate('/dashboard');
       } else {
         const res = await loginUsuario({ email, password });
         localStorage.setItem('usuario', JSON.stringify(res.data.user));
-        localStorage.setItem('tenantId', res.data.tenantId);
         navigate('/dashboard');
       }
     } catch (err) {
@@ -79,37 +77,34 @@ const Login = () => {
 
       {/* Formulario lado derecho */}
       <div className="flex flex-col justify-center items-center w-full md:w-1/2 px-6">
-        <img src={logo} alt="Logo Gus's" className="w-2/6 mb-8" />
-        <h2 className="text-3xl font-bold text-center text-orange-600 mb-4">
-          {isRegistering ? 'Registrar Usuario' : 'Iniciar Sesión'}
-        </h2>
+        <div className="max-w-md bg-white/90 backdrop-blur p-6 rounded-xl shadow-lg">
+          <div className="flex justify-center mb-6">
+            <img src={logo} alt="Logo Gus's" className="w-32" />
+          </div>
+          <h2 className="text-2xl font-bold text-orange-600 mb-4 text-center">
+            {isRegistering ? 'Registrar Usuario' : 'Iniciar Sesión'}
+          </h2>
 
-        <div className="w-full max-w-sm p-6 rounded-lg shadow-lg" style={{ backgroundImage: `url(${fondo})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
           {mensaje && <p className="text-green-600 text-sm text-center mb-2">{mensaje}</p>}
           {error && <p className="text-red-600 text-sm text-center mb-2">{error}</p>}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700">Correo electrónico</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700">Contraseña</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
-                required
-              />
-            </div>
+            <input
+              type="email"
+              placeholder="Correo electrónico"
+              className="w-full px-4 py-2 border rounded focus:ring-2 ring-orange-500"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Contraseña"
+              className="w-full px-4 py-2 border rounded focus:ring-2 ring-orange-500"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
 
             {isRegistering && (
               <div>
@@ -132,7 +127,7 @@ const Login = () => {
 
             <button
               type="submit"
-              className="w-full bg-orange-600 text-white py-2 rounded hover:bg-orange-700 transition"
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 rounded transition"
             >
               {isRegistering ? 'Registrar' : 'Iniciar Sesión'}
             </button>
@@ -152,14 +147,11 @@ const Login = () => {
             </span>
           </p>
 
-          <p className="text-center text-sm text-gray-500 mt-2">
-            <span
-              className="text-orange-600 hover:underline cursor-pointer"
-              onClick={() => navigate('/forgot-password')}
-            >
+          <div className="mt-4 text-center">
+            <a href="/forgot-password" className="text-orange-600 hover:text-orange-700 text-sm">
               ¿Olvidaste tu contraseña?
-            </span>
-          </p>
+            </a>
+          </div>
         </div>
       </div>
     </div>
