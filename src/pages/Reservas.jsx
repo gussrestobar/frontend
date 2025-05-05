@@ -38,7 +38,7 @@ const Reservas = () => {
       await axios.put(`${import.meta.env.VITE_API_URL}/api/reservas/${editandoId}`, reservaForm);
       setEditandoId(null);
     } else {
-      await axios.post('${import.meta.env.VITE_API_URL}/api/reservas', reservaForm);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/reservas`, reservaForm);
     }
     setReservaForm({ cliente_nombre: '', personas: '', fecha: '', hora: '', mesa_id: '', estado: 'pendiente', tenant_id: tenantId });
     obtenerReservas();
