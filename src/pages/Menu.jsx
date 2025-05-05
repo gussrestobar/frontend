@@ -82,40 +82,85 @@ const Menu = () => {
   }, [tenantId]);
 
   return (
-    <div className="min-h-screen p-6 bg-cover bg-center" style={{ backgroundImage: `url(${fondo})` }}>
-      <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur p-6 rounded-xl shadow-lg">
-        <h1 className="text-3xl font-bold text-orange-600 mb-6">Gestión del Menú</h1>
+    <div className="min-h-screen p-4 md:p-6 bg-cover bg-center" style={{ backgroundImage: `url(${fondo})` }}>
+      <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur p-4 md:p-6 rounded-xl shadow-lg">
+        <h1 className="text-2xl md:text-3xl font-bold text-orange-600 mb-4 md:mb-6">Gestión del Menú</h1>
 
-        <form onSubmit={guardarPlato} className="grid md:grid-cols-2 gap-4 mb-8">
-          <input type="text" placeholder="Nombre del plato" className="p-3 border rounded" value={nuevoPlato.nombre} onChange={(e) => setNuevoPlato({ ...nuevoPlato, nombre: e.target.value })} required />
-          <input type="text" placeholder="Precio (Bs)" className="p-3 border rounded" value={nuevoPlato.precio} onChange={(e) => setNuevoPlato({ ...nuevoPlato, precio: e.target.value })} required />
+        <form onSubmit={guardarPlato} className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6 md:mb-8">
+          <div className="space-y-3">
+            <input 
+              type="text" 
+              placeholder="Nombre del plato" 
+              className="w-full p-2 md:p-3 border rounded focus:ring-2 ring-orange-500" 
+              value={nuevoPlato.nombre} 
+              onChange={(e) => setNuevoPlato({ ...nuevoPlato, nombre: e.target.value })} 
+              required 
+            />
+            <input 
+              type="text" 
+              placeholder="Precio (Bs)" 
+              className="w-full p-2 md:p-3 border rounded focus:ring-2 ring-orange-500" 
+              value={nuevoPlato.precio} 
+              onChange={(e) => setNuevoPlato({ ...nuevoPlato, precio: e.target.value })} 
+              required 
+            />
+            <select 
+              className="w-full p-2 md:p-3 border rounded focus:ring-2 ring-orange-500" 
+              value={nuevoPlato.categoria_id} 
+              onChange={(e) => setNuevoPlato({ ...nuevoPlato, categoria_id: e.target.value })}
+            >
+              <option value="">Selecciona categoría</option>
+              {categorias.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+              ))}
+            </select>
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={subirImagen} 
+              className="w-full p-2 border rounded focus:ring-2 ring-orange-500" 
+            />
+          </div>
 
-          <select className="p-3 border rounded" value={nuevoPlato.categoria_id} onChange={(e) => setNuevoPlato({ ...nuevoPlato, categoria_id: e.target.value })}>
-            <option value="">Selecciona categoría</option>
-            {categorias.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.nombre}</option>
-            ))}
-          </select>
+          <div className="space-y-3">
+            <textarea 
+              placeholder="Descripción" 
+              className="w-full h-full p-2 md:p-3 border rounded focus:ring-2 ring-orange-500" 
+              rows="4"
+              value={nuevoPlato.descripcion} 
+              onChange={(e) => setNuevoPlato({ ...nuevoPlato, descripcion: e.target.value })}
+            ></textarea>
+          </div>
 
-          <input type="file" accept="image/*" onChange={subirImagen} className="p-2 border rounded" />
-
-          <textarea placeholder="Descripción" className="md:col-span-2 p-3 border rounded" rows="3" value={nuevoPlato.descripcion} onChange={(e) => setNuevoPlato({ ...nuevoPlato, descripcion: e.target.value })}></textarea>
-
-          <button type="submit" className="md:col-span-2 bg-orange-600 text-white py-2 rounded hover:bg-orange-700">
+          <button 
+            type="submit" 
+            className="md:col-span-2 bg-orange-600 text-white py-2 px-4 rounded hover:bg-orange-700 transition"
+          >
             {editando !== null ? 'Actualizar Plato' : 'Guardar Plato'}
           </button>
         </form>
 
         {/* Formulario para crear categoría */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">Crear Nueva Categoría</h2>
-          <form onSubmit={crearCategoria} className="flex gap-3">
-            <input type="text" placeholder="Nombre de la categoría" className="flex-1 p-3 border rounded" value={nuevaCategoria} onChange={(e) => setNuevaCategoria(e.target.value)} required />
-            <button className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">Crear</button>
+        <div className="mb-6 md:mb-8">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-2">Crear Nueva Categoría</h2>
+          <form onSubmit={crearCategoria} className="flex flex-col md:flex-row gap-3">
+            <input 
+              type="text" 
+              placeholder="Nombre de la categoría" 
+              className="flex-1 p-2 md:p-3 border rounded focus:ring-2 ring-orange-500" 
+              value={nuevaCategoria} 
+              onChange={(e) => setNuevaCategoria(e.target.value)} 
+              required 
+            />
+            <button 
+              className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 transition"
+            >
+              Crear
+            </button>
           </form>
         </div>
 
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Platos Registrados</h2>
+        <h2 className="text-xl md:text-2xl font-semibold text-gray-800 mb-4">Platos Registrados</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {platos.map((plato, index) => (
             <div key={index} className="bg-white rounded-lg shadow p-4">
