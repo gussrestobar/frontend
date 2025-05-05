@@ -23,7 +23,7 @@ const Login = () => {
 
   // Obtener sucursales desde backend
   useEffect(() => {
-    api.get('/tenants')
+    api.get('/api/tenants')
       .then(res => setSucursales(res.data))
       .catch(err => {
         console.error('Error al obtener sucursales:', err);
