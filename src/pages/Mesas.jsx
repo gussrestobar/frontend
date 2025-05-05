@@ -13,17 +13,17 @@ const Mesas = () => {
   const [mesaAEliminar, setMesaAEliminar] = useState(null);
 
   const obtenerMesas = async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/mesas/${tenantId}`);
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/mesas/${tenantId}`);
     setMesas(res.data);
   };
 
   const guardarMesa = async (e) => {
     e.preventDefault();
     if (editandoId) {
-      await axios.put(`${import.meta.env.VITE_API_URL}/mesas/${editandoId}`, form);
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/mesas/${editandoId}`, form);
       setEditandoId(null);
     } else {
-      await axios.post(`${import.meta.env.VITE_API_URL}/mesas`, form);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/mesas`, form);
     }
     setForm({ numero: '', capacidad: '', tenant_id: tenantId });
     obtenerMesas();
@@ -40,7 +40,7 @@ const Mesas = () => {
   };
 
   const eliminarMesa = async () => {
-    await axios.delete(`${import.meta.env.VITE_API_URL}/mesas/${mesaAEliminar.id}`);
+    await axios.delete(`${import.meta.env.VITE_API_URL}/api/mesas/${mesaAEliminar.id}`);
     setMostrarModal(false);
     setMesaAEliminar(null);
     obtenerMesas();

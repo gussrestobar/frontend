@@ -23,22 +23,22 @@ const Reservas = () => {
   const [reservaAEliminar, setReservaAEliminar] = useState(null);
 
   const obtenerReservas = async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/reservas/${tenantId}`);
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/reservas/${tenantId}`);
     setReservas(res.data);
   };
 
   const obtenerMesasDisponibles = async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/mesas/disponibles/${tenantId}`);
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/mesas/disponibles/${tenantId}`);
     setMesasDisponibles(res.data);
   };
 
   const guardarReserva = async (e) => {
     e.preventDefault();
     if (editandoId) {
-      await axios.put(`${import.meta.env.VITE_API_URL}/reservas/${editandoId}`, reservaForm);
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/reservas/${editandoId}`, reservaForm);
       setEditandoId(null);
     } else {
-      await axios.post(`${import.meta.env.VITE_API_URL}/reservas`, reservaForm);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/reservas`, reservaForm);
     }
     setReservaForm({ cliente_nombre: '', personas: '', fecha: '', hora: '', mesa_id: '', estado: 'pendiente', tenant_id: tenantId });
     obtenerReservas();
@@ -56,7 +56,7 @@ const Reservas = () => {
   };
 
   const eliminarReserva = async () => {
-    await axios.delete(`${import.meta.env.VITE_API_URL}/reservas/${reservaAEliminar.id}`);
+    await axios.delete(`${import.meta.env.VITE_API_URL}/api/reservas/${reservaAEliminar.id}`);
     setMostrarModal(false);
     setReservaAEliminar(null);
     obtenerReservas();

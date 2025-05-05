@@ -23,22 +23,22 @@ const Menu = () => {
   });
 
   const obtenerPlatos = async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/menu/${tenantId}`);
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/menu/${tenantId}`);
     setPlatos(res.data);
   };
 
   const obtenerCategorias = async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/categorias`);
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/categorias`);
     setCategorias(res.data);
   };
 
   const guardarPlato = async (e) => {
     e.preventDefault();
     if (editando !== null) {
-      await axios.put(`${import.meta.env.VITE_API_URL}/menu/${editando}`, nuevoPlato);
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/menu/${editando}`, nuevoPlato);
       setEditando(null);
     } else {
-      await axios.post(`${import.meta.env.VITE_API_URL}/menu`, nuevoPlato);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/menu`, nuevoPlato);
     }
     setNuevoPlato({ nombre: '', descripcion: '', precio: '', categoria_id: '', imagen_url: '', tenant_id: tenantId });
     obtenerPlatos();
@@ -47,7 +47,7 @@ const Menu = () => {
   const crearCategoria = async (e) => {
     e.preventDefault();
     if (!nuevaCategoria) return;
-    await axios.post(`${import.meta.env.VITE_API_URL}/categorias`, { nombre: nuevaCategoria });
+    await axios.post(`${import.meta.env.VITE_API_URL}/api/categorias`, { nombre: nuevaCategoria });
     setNuevaCategoria('');
     obtenerCategorias();
   };
@@ -55,7 +55,7 @@ const Menu = () => {
   const subirImagen = async (e) => {
     const formData = new FormData();
     formData.append('imagen', e.target.files[0]);
-    const res = await axios.post(`${import.meta.env.VITE_API_URL}/upload`, formData);
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/upload`, formData);
     setNuevoPlato({ ...nuevoPlato, imagen_url: res.data.url });
   };
 
@@ -70,7 +70,7 @@ const Menu = () => {
   };
 
   const eliminarPlato = async () => {
-    await axios.delete(`${import.meta.env.VITE_API_URL}/menu/${platoAEliminar.id}`);
+    await axios.delete(`${import.meta.env.VITE_API_URL}/api/menu/${platoAEliminar.id}`);
     setMostrarModal(false);
     setPlatoAEliminar(null);
     obtenerPlatos();
