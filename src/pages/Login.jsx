@@ -56,7 +56,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-6 bg-cover bg-center" style={{ backgroundImage: `url(${fondo})` }}>
+    <div className="flex h-screen bg-cover bg-center" style={{ backgroundImage: `url(${fondo})` }}>
       {/* Carrusel lado izquierdo */}
       <div className="hidden md:flex md:w-1/2 items-center justify-center bg-black">
         <Swiper
@@ -77,7 +77,7 @@ const Login = () => {
 
       {/* Formulario lado derecho */}
       <div className="flex flex-col justify-center items-center w-full md:w-1/2 px-6">
-        <div className="max-w-md bg-white/90 backdrop-blur p-6 rounded-xl shadow-lg">
+        <div className="w-full max-w-sm bg-white/90 backdrop-blur p-6 rounded-xl shadow-lg">
           <div className="flex justify-center mb-6">
             <img src={logo} alt="Logo Gus's" className="w-32" />
           </div>
