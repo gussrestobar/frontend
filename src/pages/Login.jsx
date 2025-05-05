@@ -23,7 +23,7 @@ const Login = () => {
 
   // Obtener sucursales desde backend
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/tenants`)
+    axios.get(`${import.meta.env.VITE_API_URL}/api/tenants`)
       .then(res => setSucursales(res.data))
       .catch(err => {
         console.error('Error al obtener sucursales:', err);
