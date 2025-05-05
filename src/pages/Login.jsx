@@ -6,8 +6,9 @@ import 'swiper/css';
 import 'swiper/css/effect-fade';
 import { EffectFade, Autoplay } from 'swiper/modules';
 import axios from 'axios';
-
+import fondo from '../assets/fondo-dashboard.png';
 import logo from '../assets/logo-guss.png';
+
 import promo1 from '../assets/promo-burger.jpg';
 import promo2 from '../assets/promo-alitas.jpg';
 
@@ -42,10 +43,12 @@ const Login = () => {
         setMensaje('¡Usuario registrado con éxito!');
         const res = await loginUsuario({ email, password });
         localStorage.setItem('usuario', JSON.stringify(res.data.user));
+        localStorage.setItem('tenantId', res.data.tenantId);
         navigate('/dashboard');
       } else {
         const res = await loginUsuario({ email, password });
         localStorage.setItem('usuario', JSON.stringify(res.data.user));
+        localStorage.setItem('tenantId', res.data.tenantId);
         navigate('/dashboard');
       }
     } catch (err) {
@@ -55,7 +58,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="min-h-screen p-4 md:p-6 bg-cover bg-center" style={{ backgroundImage: `url(${fondo})` }}>
       {/* Carrusel lado izquierdo */}
       <div className="hidden md:flex md:w-1/2 items-center justify-center bg-black">
         <Swiper
@@ -81,7 +84,7 @@ const Login = () => {
           {isRegistering ? 'Registrar Usuario' : 'Iniciar Sesión'}
         </h2>
 
-        <div className="w-full max-w-sm bg-white p-6 rounded-lg shadow-lg">
+        <div className="w-full max-w-sm p-6 rounded-lg shadow-lg" style={{ backgroundImage: `url(${fondo})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
           {mensaje && <p className="text-green-600 text-sm text-center mb-2">{mensaje}</p>}
           {error && <p className="text-red-600 text-sm text-center mb-2">{error}</p>}
 
