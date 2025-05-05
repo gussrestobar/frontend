@@ -16,7 +16,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchResumen = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/reservas/resumen/${tenantId}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/reservas/resumen/${tenantId}`);
         setResumen(res.data);
       } catch (err) {
         console.error('Error al obtener resumen:', err);
@@ -25,7 +25,7 @@ const Dashboard = () => {
 
     const fetchSucursal = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/tenants/${tenantId}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/tenants/${tenantId}`);
         setNombreSucursal(res.data.nombre);
       } catch (err) {
         console.error('Error al obtener el nombre de la sucursal:', err);

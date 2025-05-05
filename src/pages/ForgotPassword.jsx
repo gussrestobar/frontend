@@ -12,7 +12,7 @@ const ForgotPassword = () => {
     setError('');
 
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/users/forgot-password`, { email });
+      await axios.post(`${import.meta.env.VITE_API_URL}/users/forgot-password`, { email });
       setMensaje('Correo enviado. Revisa tu bandeja de entrada.');
     } catch (err) {
       setError(err.response?.data?.error || 'Error al enviar el correo');
