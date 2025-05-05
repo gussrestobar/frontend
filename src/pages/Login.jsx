@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 import { EffectFade, Autoplay } from 'swiper/modules';
-import api from '../config/api';
+import axios from 'axios';
 
 import logo from '../assets/logo-guss.png';
 import promo1 from '../assets/promo-burger.jpg';
@@ -23,7 +23,7 @@ const Login = () => {
 
   // Obtener sucursales desde backend
   useEffect(() => {
-    api.get('/api/tenants')
+    axios.get(`${import.meta.env.VITE_API_URL}/api/tenants`)
       .then(res => setSucursales(res.data))
       .catch(err => {
         console.error('Error al obtener sucursales:', err);
