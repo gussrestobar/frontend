@@ -23,7 +23,7 @@ const Mesas = () => {
       await axios.put(`${import.meta.env.VITE_API_URL}/api/mesas/${editandoId}`, form);
       setEditandoId(null);
     } else {
-      await axios.post('${API_URL}/api/mesas', form);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/mesas`, form);
     }
     setForm({ numero: '', capacidad: '', tenant_id: tenantId });
     obtenerMesas();
