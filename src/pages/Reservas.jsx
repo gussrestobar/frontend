@@ -9,6 +9,7 @@ const Reservas = () => {
   const [reservas, setReservas] = useState([]);
   const [mesasDisponibles, setMesasDisponibles] = useState([]);
   const [filtro, setFiltro] = useState('');
+  const [errores, setErrores] = useState({});
   const [reservaForm, setReservaForm] = useState({
     cliente_nombre: '',
     personas: '',
@@ -22,6 +23,28 @@ const Reservas = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [reservaAEliminar, setReservaAEliminar] = useState(null);
 
+  // Función para validar el nombre
+  const validarNombre = (nombre) => {
+    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    return regex.test(nombre);
+  };
+
+  // Función para validar la fecha
+  const validarFecha = (fecha) => {
+    const hoy = new Date();
+    const fechaReserva = new Date(fecha);
+    const unMesDespues = new Date();
+    unMesDespues.setMonth(unMesDespues.getMonth() + 1);
+
+    return fechaReserva >= hoy && fechaReserva <= unMesDespues;
+  };
+
+  // Función para validar la hora
+  const validarHora = (hora) => {
+    const [horas] = hora.split(':').map(Number);
+    return horas >= 8 && horas <= 22;
+  };
+
   const obtenerReservas = async () => {
     const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/reservas/${tenantId}`);
     setReservas(res.data);
@@ -32,8 +55,50 @@ const Reservas = () => {
     setMesasDisponibles(res.data);
   };
 
+  const validarFormulario = () => {
+    const nuevosErrores = {};
+
+    // Validar nombre
+    if (!reservaForm.cliente_nombre) {
+      nuevosErrores.cliente_nombre = 'El nombre es requerido';
+    } else if (!validarNombre(reservaForm.cliente_nombre)) {
+      nuevosErrores.cliente_nombre = 'Solo se permiten letras y espacios';
+    }
+
+    // Validar personas
+    if (!reservaForm.personas) {
+      nuevosErrores.personas = 'El número de personas es requerido';
+    } else if (isNaN(reservaForm.personas) || reservaForm.personas < 1 || reservaForm.personas > 9) {
+      nuevosErrores.personas = 'Debe ser un número entre 1 y 9';
+    }
+
+    // Validar fecha
+    if (!reservaForm.fecha) {
+      nuevosErrores.fecha = 'La fecha es requerida';
+    } else if (!validarFecha(reservaForm.fecha)) {
+      nuevosErrores.fecha = 'La fecha debe estar entre hoy y un mes después';
+    }
+
+    // Validar hora
+    if (!reservaForm.hora) {
+      nuevosErrores.hora = 'La hora es requerida';
+    } else if (!validarHora(reservaForm.hora)) {
+      nuevosErrores.hora = 'La hora debe estar entre 8:00 y 22:00';
+    }
+
+    // Validar mesa
+    if (!reservaForm.mesa_id) {
+      nuevosErrores.mesa_id = 'Debes seleccionar una mesa';
+    }
+
+    setErrores(nuevosErrores);
+    return Object.keys(nuevosErrores).length === 0;
+  };
+
   const guardarReserva = async (e) => {
     e.preventDefault();
+    if (!validarFormulario()) return;
+
     try {
       if (editandoId) {
         await axios.put(`${import.meta.env.VITE_API_URL}/api/reservas/${editandoId}`, reservaForm);
@@ -42,6 +107,7 @@ const Reservas = () => {
         await axios.post(`${import.meta.env.VITE_API_URL}/api/reservas`, reservaForm);
       }
       setReservaForm({ cliente_nombre: '', personas: '', fecha: '', hora: '', mesa_id: '', estado: 'pendiente', tenant_id: tenantId });
+      setErrores({});
       await Promise.all([obtenerReservas(), obtenerMesasDisponibles()]);
     } catch (err) {
       console.error('Error al guardar reserva:', err);
@@ -51,6 +117,7 @@ const Reservas = () => {
   const editarReserva = (reserva) => {
     setReservaForm({ ...reserva });
     setEditandoId(reserva.id);
+    setErrores({});
   };
 
   const confirmarEliminar = (reserva) => {
@@ -84,29 +151,91 @@ const Reservas = () => {
         <h1 className="text-3xl font-bold text-orange-600 mb-6">Reservas</h1>
 
         <form onSubmit={guardarReserva} className="grid md:grid-cols-2 gap-4 mb-8">
-          <input type="text" placeholder="Nombre del cliente" className="p-3 border rounded" value={reservaForm.cliente_nombre} onChange={(e) => setReservaForm({ ...reservaForm, cliente_nombre: e.target.value })} required />
-          <input type="number" placeholder="Personas" className="p-3 border rounded" value={reservaForm.personas} onChange={(e) => setReservaForm({ ...reservaForm, personas: e.target.value })} required />
-          <input type="date" className="p-3 border rounded" value={reservaForm.fecha} onChange={(e) => setReservaForm({ ...reservaForm, fecha: e.target.value })} required />
-          <input type="time" className="p-3 border rounded" value={reservaForm.hora} onChange={(e) => setReservaForm({ ...reservaForm, hora: e.target.value })} required />
+          <div>
+            <input 
+              type="text" 
+              placeholder="Nombre del cliente" 
+              className={`w-full p-3 border rounded ${errores.cliente_nombre ? 'border-red-500' : ''}`} 
+              value={reservaForm.cliente_nombre} 
+              onChange={(e) => setReservaForm({ ...reservaForm, cliente_nombre: e.target.value })} 
+              required 
+            />
+            {errores.cliente_nombre && <p className="text-red-500 text-sm mt-1">{errores.cliente_nombre}</p>}
+          </div>
 
-          <select className="p-3 border rounded" value={reservaForm.mesa_id} onChange={(e) => setReservaForm({ ...reservaForm, mesa_id: e.target.value })} required>
-            <option value="">Selecciona una mesa</option>
-            {mesasDisponibles.length === 0 ? (
-              <option disabled>No hay mesas disponibles</option>
-            ) : (
-              mesasDisponibles.map((mesa) => (
-                <option key={mesa.id} value={mesa.id}>
-                  Mesa #{mesa.numero} - Capacidad: {mesa.capacidad}
-                </option>
-              ))
-            )}
-          </select>
+          <div>
+            <input 
+              type="number" 
+              placeholder="Personas" 
+              className={`w-full p-3 border rounded ${errores.personas ? 'border-red-500' : ''}`} 
+              value={reservaForm.personas} 
+              onChange={(e) => setReservaForm({ ...reservaForm, personas: e.target.value })} 
+              min="1" 
+              max="9"
+              required 
+            />
+            {errores.personas && <p className="text-red-500 text-sm mt-1">{errores.personas}</p>}
+          </div>
 
-          <select className="p-3 border rounded" value={reservaForm.estado} onChange={(e) => setReservaForm({ ...reservaForm, estado: e.target.value })}>
-            <option value="pendiente">Pendiente</option>
-            <option value="confirmada">Confirmada</option>
-            <option value="cancelada">Cancelada</option>
-          </select>
+          <div>
+            <input 
+              type="date" 
+              className={`w-full p-3 border rounded ${errores.fecha ? 'border-red-500' : ''}`} 
+              value={reservaForm.fecha} 
+              onChange={(e) => setReservaForm({ ...reservaForm, fecha: e.target.value })} 
+              min={new Date().toISOString().split('T')[0]}
+              max={new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0]}
+              required 
+            />
+            {errores.fecha && <p className="text-red-500 text-sm mt-1">{errores.fecha}</p>}
+          </div>
+
+          <div>
+            <input 
+              type="time" 
+              className={`w-full p-3 border rounded ${errores.hora ? 'border-red-500' : ''}`} 
+              value={reservaForm.hora} 
+              onChange={(e) => setReservaForm({ ...reservaForm, hora: e.target.value })} 
+              min="08:00"
+              max="22:00"
+              required 
+            />
+            {errores.hora && <p className="text-red-500 text-sm mt-1">{errores.hora}</p>}
+          </div>
+
+          <div>
+            <select 
+              className={`w-full p-3 border rounded ${errores.mesa_id ? 'border-red-500' : ''}`} 
+              value={reservaForm.mesa_id} 
+              onChange={(e) => setReservaForm({ ...reservaForm, mesa_id: e.target.value })} 
+              required
+            >
+              <option value="">Selecciona una mesa</option>
+              {mesasDisponibles.length === 0 ? (
+                <option disabled>No hay mesas disponibles</option>
+              ) : (
+                mesasDisponibles.map((mesa) => (
+                  <option key={mesa.id} value={mesa.id}>
+                    Mesa #{mesa.numero} - Capacidad: {mesa.capacidad}
+                  </option>
+                ))
+              )}
+            </select>
+            {errores.mesa_id && <p className="text-red-500 text-sm mt-1">{errores.mesa_id}</p>}
+          </div>
+
+          <div>
+            <select 
+              className="w-full p-3 border rounded" 
+              value={reservaForm.estado} 
+              onChange={(e) => setReservaForm({ ...reservaForm, estado: e.target.value })}
+            >
+              <option value="pendiente">Pendiente</option>
+              <option value="confirmada">Confirmada</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+          </div>
+
           <button type="submit" className="md:col-span-2 bg-orange-600 text-white py-2 rounded hover:bg-orange-700">
             {editandoId ? 'Actualizar Reserva' : 'Registrar Reserva'}
           </button>
