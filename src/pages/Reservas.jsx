@@ -57,51 +57,22 @@ const Reservas = () => {
   };
 
   const obtenerMesasDisponibles = async () => {
-    // Validar que fecha y hora estén presentes y tengan el formato correcto
-    if (!reservaForm.fecha || !reservaForm.hora) {
-      setMesasDisponibles([]);
-      return;
-    }
-
-    // Validar formato de hora (HH:MM)
-    const horaRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-    if (!horaRegex.test(reservaForm.hora)) {
-      setMesasDisponibles([]);
-      return;
-    }
-    
     try {
-      console.log('Obteniendo mesas para:', reservaForm.fecha, reservaForm.hora);
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/mesas/disponibles/${tenantId}`,
-        { 
-          params: { 
-            fecha: reservaForm.fecha, 
-            hora: reservaForm.hora 
-          }
-        }
+        `${import.meta.env.VITE_API_URL}/api/mesas/disponibles/${tenantId}`
       );
       console.log('Mesas disponibles:', res.data);
       setMesasDisponibles(res.data);
     } catch (err) {
-      console.error('Error al obtener mesas disponibles:', err);
+      console.error('Error al obtener mesas:', err);
       setMesasDisponibles([]);
     }
   };
 
-  // Actualizar mesas disponibles cuando cambie la fecha u hora
+  // Cargar mesas al iniciar
   useEffect(() => {
-    const timer = setTimeout(() => {
-      obtenerMesasDisponibles();
-    }, 300); // Pequeño retraso para evitar múltiples llamadas
-
-    return () => clearTimeout(timer);
-  }, [reservaForm.fecha, reservaForm.hora]);
-
-  // Limpiar mesa seleccionada cuando cambie la fecha u hora
-  useEffect(() => {
-    setReservaForm(prev => ({ ...prev, mesa_id: '' }));
-  }, [reservaForm.fecha, reservaForm.hora]);
+    obtenerMesasDisponibles();
+  }, []);
 
   const handleFechaChange = (e) => {
     const nuevaFecha = e.target.value;
@@ -208,7 +179,6 @@ const Reservas = () => {
 
   useEffect(() => {
     obtenerReservas();
-    obtenerMesasDisponibles();
   }, []);
 
   const reservasFiltradas = reservas.filter((r) =>
@@ -282,7 +252,6 @@ const Reservas = () => {
               value={reservaForm.mesa_id} 
               onChange={(e) => setReservaForm({ ...reservaForm, mesa_id: e.target.value })} 
               required
-              disabled={!reservaForm.fecha || !reservaForm.hora}
             >
               <option value="">Selecciona una mesa</option>
               {mesasDisponibles.map((mesa) => (
