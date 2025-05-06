@@ -63,6 +63,7 @@ const Reservas = () => {
     }
     
     try {
+      console.log('Obteniendo mesas para:', reservaForm.fecha, reservaForm.hora);
       const res = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/mesas/disponibles/${tenantId}`,
         { 
@@ -72,6 +73,7 @@ const Reservas = () => {
           }
         }
       );
+      console.log('Mesas disponibles:', res.data);
       setMesasDisponibles(res.data);
     } catch (err) {
       console.error('Error al obtener mesas disponibles:', err);
@@ -81,17 +83,39 @@ const Reservas = () => {
 
   // Actualizar mesas disponibles cuando cambie la fecha u hora
   useEffect(() => {
-    if (reservaForm.fecha && reservaForm.hora) {
-      obtenerMesasDisponibles();
-    } else {
-      setMesasDisponibles([]);
-    }
+    const timer = setTimeout(() => {
+      if (reservaForm.fecha && reservaForm.hora) {
+        obtenerMesasDisponibles();
+      } else {
+        setMesasDisponibles([]);
+      }
+    }, 300); // Pequeño retraso para evitar múltiples llamadas
+
+    return () => clearTimeout(timer);
   }, [reservaForm.fecha, reservaForm.hora]);
 
   // Limpiar mesa seleccionada cuando cambie la fecha u hora
   useEffect(() => {
     setReservaForm(prev => ({ ...prev, mesa_id: '' }));
   }, [reservaForm.fecha, reservaForm.hora]);
+
+  const handleFechaChange = (e) => {
+    const nuevaFecha = e.target.value;
+    setReservaForm(prev => ({ 
+      ...prev, 
+      fecha: nuevaFecha,
+      mesa_id: '' 
+    }));
+  };
+
+  const handleHoraChange = (e) => {
+    const nuevaHora = e.target.value;
+    setReservaForm(prev => ({ 
+      ...prev, 
+      hora: nuevaHora,
+      mesa_id: '' 
+    }));
+  };
 
   const validarFormulario = () => {
     const nuevosErrores = {};
@@ -220,7 +244,7 @@ const Reservas = () => {
               type="date" 
               className={`w-full p-3 border rounded ${errores.fecha ? 'border-red-500' : ''}`} 
               value={reservaForm.fecha} 
-              onChange={(e) => setReservaForm({ ...reservaForm, fecha: e.target.value, mesa_id: '' })} 
+              onChange={handleFechaChange}
               min={new Date().toISOString().split('T')[0]}
               max={new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0]}
               required 
@@ -233,7 +257,7 @@ const Reservas = () => {
               type="time" 
               className={`w-full p-3 border rounded ${errores.hora ? 'border-red-500' : ''}`} 
               value={reservaForm.hora} 
-              onChange={(e) => setReservaForm({ ...reservaForm, hora: e.target.value, mesa_id: '' })} 
+              onChange={handleHoraChange}
               min="08:00"
               max="22:00"
               required 
