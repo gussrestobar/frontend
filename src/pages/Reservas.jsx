@@ -285,15 +285,11 @@ const Reservas = () => {
               disabled={!reservaForm.fecha || !reservaForm.hora}
             >
               <option value="">Selecciona una mesa</option>
-              {mesasDisponibles.length === 0 ? (
-                <option disabled>No hay mesas disponibles para este turno</option>
-              ) : (
-                mesasDisponibles.map((mesa) => (
-                  <option key={mesa.id} value={mesa.id}>
-                    Mesa #{mesa.numero} - Capacidad: {mesa.capacidad}
-                  </option>
-                ))
-              )}
+              {mesasDisponibles.map((mesa) => (
+                <option key={mesa.id} value={mesa.id}>
+                  Mesa #{mesa.numero} - Capacidad: {mesa.capacidad}
+                </option>
+              ))}
             </select>
             {errores.mesa_id && <p className="text-red-500 text-sm mt-1">{errores.mesa_id}</p>}
           </div>
