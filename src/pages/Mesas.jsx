@@ -7,7 +7,7 @@ const Mesas = () => {
   const tenantId = usuario?.tenant_id;
 
   const [mesas, setMesas] = useState([]);
-  const [form, setForm] = useState({ numero: '', capacidad: '', tenant_id: tenantId });
+  const [form, setForm] = useState({ numero: '', capacidad: '', estado: 'disponible', tenant_id: tenantId });
   const [editandoId, setEditandoId] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mesaAEliminar, setMesaAEliminar] = useState(null);
@@ -25,7 +25,7 @@ const Mesas = () => {
     } else {
       await axios.post(`${import.meta.env.VITE_API_URL}/api/mesas`, form);
     }
-    setForm({ numero: '', capacidad: '', tenant_id: tenantId });
+    setForm({ numero: '', capacidad: '', estado: 'disponible', tenant_id: tenantId });
     obtenerMesas();
   };
 
@@ -72,6 +72,15 @@ const Mesas = () => {
             onChange={(e) => setForm({ ...form, capacidad: e.target.value })}
             required
           />
+          <select
+            className="p-3 border rounded"
+            value={form.estado}
+            onChange={(e) => setForm({ ...form, estado: e.target.value })}
+          >
+            <option value="disponible">Disponible</option>
+            <option value="ocupada">Ocupada</option>
+            <option value="reservada">Reservada</option>
+          </select>
           <button type="submit" className="md:col-span-2 bg-orange-600 text-white py-2 rounded hover:bg-orange-700">
             {editandoId ? 'Actualizar Mesa' : 'Agregar Mesa'}
           </button>
@@ -83,6 +92,13 @@ const Mesas = () => {
             <div key={mesa.id} className="bg-white rounded-lg shadow p-4">
               <h3 className="text-xl font-bold text-orange-600">Mesa #{mesa.numero}</h3>
               <p className="text-gray-700">Capacidad: {mesa.capacidad}</p>
+              <p className={`text-sm font-medium ${
+                mesa.estado === 'disponible' ? 'text-green-600' :
+                mesa.estado === 'ocupada' ? 'text-red-600' :
+                'text-amber-600'
+              }`}>
+                Estado: {mesa.estado}
+              </p>
               <div className="flex justify-between mt-4">
                 <button onClick={() => editarMesa(mesa)} className="text-sm text-blue-600 hover:underline">Editar</button>
                 <button onClick={() => confirmarEliminar(mesa)} className="text-sm text-red-600 hover:underline">Eliminar</button>

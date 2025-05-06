@@ -34,15 +34,18 @@ const Reservas = () => {
 
   const guardarReserva = async (e) => {
     e.preventDefault();
-    if (editandoId) {
-      await axios.put(`${import.meta.env.VITE_API_URL}/api/reservas/${editandoId}`, reservaForm);
-      setEditandoId(null);
-    } else {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/reservas`, reservaForm);
+    try {
+      if (editandoId) {
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/reservas/${editandoId}`, reservaForm);
+        setEditandoId(null);
+      } else {
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/reservas`, reservaForm);
+      }
+      setReservaForm({ cliente_nombre: '', personas: '', fecha: '', hora: '', mesa_id: '', estado: 'pendiente', tenant_id: tenantId });
+      await Promise.all([obtenerReservas(), obtenerMesasDisponibles()]);
+    } catch (err) {
+      console.error('Error al guardar reserva:', err);
     }
-    setReservaForm({ cliente_nombre: '', personas: '', fecha: '', hora: '', mesa_id: '', estado: 'pendiente', tenant_id: tenantId });
-    obtenerReservas();
-    obtenerMesasDisponibles();
   };
 
   const editarReserva = (reserva) => {
@@ -56,11 +59,14 @@ const Reservas = () => {
   };
 
   const eliminarReserva = async () => {
-    await axios.delete(`${import.meta.env.VITE_API_URL}/api/reservas/${reservaAEliminar.id}`);
-    setMostrarModal(false);
-    setReservaAEliminar(null);
-    obtenerReservas();
-    obtenerMesasDisponibles();
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/reservas/${reservaAEliminar.id}`);
+      setMostrarModal(false);
+      setReservaAEliminar(null);
+      await Promise.all([obtenerReservas(), obtenerMesasDisponibles()]);
+    } catch (err) {
+      console.error('Error al eliminar reserva:', err);
+    }
   };
 
   useEffect(() => {
@@ -122,7 +128,13 @@ const Reservas = () => {
               <p className="text-gray-700">Fecha: {reserva.fecha}</p>
               <p className="text-gray-700">Hora: {reserva.hora}</p>
               <p className="text-gray-700">Mesa: #{reserva.numero_mesa || reserva.mesa_id || 'No asignada'}</p>
-              <p className="text-gray-700">Estado: {reserva.estado}</p>
+              <p className={`text-sm font-medium ${
+                reserva.estado === 'confirmada' ? 'text-green-600' :
+                reserva.estado === 'cancelada' ? 'text-red-600' :
+                'text-amber-600'
+              }`}>
+                Estado: {reserva.estado}
+              </p>
               <div className="flex justify-between mt-4">
                 <button onClick={() => editarReserva(reserva)} className="text-sm text-blue-600 hover:underline">Editar</button>
                 <button onClick={() => confirmarEliminar(reserva)} className="text-sm text-red-600 hover:underline">Eliminar</button>
