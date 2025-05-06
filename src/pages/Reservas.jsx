@@ -45,6 +45,12 @@ const Reservas = () => {
     return horas >= 8 && horas <= 22;
   };
 
+  // Función para determinar el turno
+  const determinarTurno = (hora) => {
+    const [horas] = hora.split(':').map(Number);
+    return horas < 12 ? 'mañana' : 'tarde';
+  };
+
   const obtenerReservas = async () => {
     const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/reservas/${tenantId}`);
     setReservas(res.data);
@@ -215,6 +221,9 @@ const Reservas = () => {
               required 
             />
             {errores.hora && <p className="text-red-500 text-sm mt-1">{errores.hora}</p>}
+            <p className="text-sm text-gray-500 mt-1">
+              Turno {determinarTurno(reservaForm.hora)} ({reservaForm.hora < '12:00' ? '8:00 - 12:00' : '12:00 - 22:00'})
+            </p>
           </div>
 
           <div>
@@ -226,7 +235,7 @@ const Reservas = () => {
             >
               <option value="">Selecciona una mesa</option>
               {mesasDisponibles.length === 0 ? (
-                <option disabled>No hay mesas disponibles</option>
+                <option disabled>No hay mesas disponibles para este turno</option>
               ) : (
                 mesasDisponibles.map((mesa) => (
                   <option key={mesa.id} value={mesa.id}>
