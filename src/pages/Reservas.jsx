@@ -57,7 +57,15 @@ const Reservas = () => {
   };
 
   const obtenerMesasDisponibles = async () => {
+    // Validar que fecha y hora estén presentes y tengan el formato correcto
     if (!reservaForm.fecha || !reservaForm.hora) {
+      setMesasDisponibles([]);
+      return;
+    }
+
+    // Validar formato de hora (HH:MM)
+    const horaRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    if (!horaRegex.test(reservaForm.hora)) {
       setMesasDisponibles([]);
       return;
     }
@@ -84,11 +92,7 @@ const Reservas = () => {
   // Actualizar mesas disponibles cuando cambie la fecha u hora
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (reservaForm.fecha && reservaForm.hora) {
-        obtenerMesasDisponibles();
-      } else {
-        setMesasDisponibles([]);
-      }
+      obtenerMesasDisponibles();
     }, 300); // Pequeño retraso para evitar múltiples llamadas
 
     return () => clearTimeout(timer);
@@ -101,20 +105,24 @@ const Reservas = () => {
 
   const handleFechaChange = (e) => {
     const nuevaFecha = e.target.value;
-    setReservaForm(prev => ({ 
-      ...prev, 
-      fecha: nuevaFecha,
-      mesa_id: '' 
-    }));
+    if (nuevaFecha) {
+      setReservaForm(prev => ({ 
+        ...prev, 
+        fecha: nuevaFecha,
+        mesa_id: '' 
+      }));
+    }
   };
 
   const handleHoraChange = (e) => {
     const nuevaHora = e.target.value;
-    setReservaForm(prev => ({ 
-      ...prev, 
-      hora: nuevaHora,
-      mesa_id: '' 
-    }));
+    if (nuevaHora) {
+      setReservaForm(prev => ({ 
+        ...prev, 
+        hora: nuevaHora,
+        mesa_id: '' 
+      }));
+    }
   };
 
   const validarFormulario = () => {
