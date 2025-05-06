@@ -116,10 +116,11 @@ const Menu = () => {
             </select>
             <input 
               type="file" 
-              accept="image/*" 
+              accept="image/jpeg,image/png,image/jpg" 
               onChange={subirImagen} 
               className="w-full p-2 border rounded focus:ring-2 ring-orange-500" 
             />
+            <p className="text-sm text-gray-500">Formatos permitidos: JPG, PNG (máximo 5MB)</p>
           </div>
 
           <div className="space-y-3">
