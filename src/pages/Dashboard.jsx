@@ -10,6 +10,11 @@ const Dashboard = () => {
   const [nombreSucursal, setNombreSucursal] = useState('');
   const usuario = JSON.parse(localStorage.getItem('usuario'));
   const tenantId = usuario?.tenant_id;
+  const [estadisticas, setEstadisticas] = useState({
+    total_reservas: 0,
+    total_mesas: 0,
+    total_platos: 0
+  });
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
@@ -32,8 +37,20 @@ const Dashboard = () => {
       }
     };
 
+    const obtenerEstadisticas = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/dashboard/estadisticas/${tenantId}`
+        );
+        setEstadisticas(res.data);
+      } catch (err) {
+        console.error('Error al obtener estadísticas:', err);
+      }
+    };
+
     fetchResumen();
     fetchSucursal();
+    obtenerEstadisticas();
   }, [tenantId]);
 
   return (
@@ -75,6 +92,53 @@ const Dashboard = () => {
           <div className="bg-white/80 backdrop-blur-lg p-5 rounded-xl shadow-md">
             <h2 className="text-lg font-semibold text-gray-700">Total del Mes</h2>
             <p className="text-3xl font-bold text-purple-600 mt-2">{resumen.total}</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Tarjeta de Reservas */}
+          <div className="bg-white/90 backdrop-blur p-6 rounded-xl shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-500">Reservas Totales</p>
+                <h2 className="text-3xl font-bold text-orange-600">{estadisticas.total_reservas}</h2>
+              </div>
+              <div className="bg-orange-100 p-3 rounded-full">
+                <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Tarjeta de Mesas */}
+          <div className="bg-white/90 backdrop-blur p-6 rounded-xl shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-500">Mesas Totales</p>
+                <h2 className="text-3xl font-bold text-orange-600">{estadisticas.total_mesas}</h2>
+              </div>
+              <div className="bg-orange-100 p-3 rounded-full">
+                <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Tarjeta de Platos */}
+          <div className="bg-white/90 backdrop-blur p-6 rounded-xl shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-500">Platos en Menú</p>
+                <h2 className="text-3xl font-bold text-orange-600">{estadisticas.total_platos}</h2>
+              </div>
+              <div className="bg-orange-100 p-3 rounded-full">
+                <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
 
