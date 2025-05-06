@@ -32,10 +32,10 @@ const Reservas = () => {
   // Función para validar la fecha
   const validarFecha = (fecha) => {
     const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
     const fechaReserva = new Date(fecha);
     const unMesDespues = new Date();
     unMesDespues.setMonth(unMesDespues.getMonth() + 1);
-
     return fechaReserva >= hoy && fechaReserva <= unMesDespues;
   };
 
@@ -57,7 +57,10 @@ const Reservas = () => {
   };
 
   const obtenerMesasDisponibles = async () => {
-    if (!reservaForm.fecha || !reservaForm.hora) return;
+    if (!reservaForm.fecha || !reservaForm.hora) {
+      setMesasDisponibles([]);
+      return;
+    }
     
     try {
       const res = await axios.get(
@@ -72,6 +75,7 @@ const Reservas = () => {
       setMesasDisponibles(res.data);
     } catch (err) {
       console.error('Error al obtener mesas disponibles:', err);
+      setMesasDisponibles([]);
     }
   };
 
@@ -79,7 +83,14 @@ const Reservas = () => {
   useEffect(() => {
     if (reservaForm.fecha && reservaForm.hora) {
       obtenerMesasDisponibles();
+    } else {
+      setMesasDisponibles([]);
     }
+  }, [reservaForm.fecha, reservaForm.hora]);
+
+  // Limpiar mesa seleccionada cuando cambie la fecha u hora
+  useEffect(() => {
+    setReservaForm(prev => ({ ...prev, mesa_id: '' }));
   }, [reservaForm.fecha, reservaForm.hora]);
 
   const validarFormulario = () => {
@@ -209,7 +220,7 @@ const Reservas = () => {
               type="date" 
               className={`w-full p-3 border rounded ${errores.fecha ? 'border-red-500' : ''}`} 
               value={reservaForm.fecha} 
-              onChange={(e) => setReservaForm({ ...reservaForm, fecha: e.target.value })} 
+              onChange={(e) => setReservaForm({ ...reservaForm, fecha: e.target.value, mesa_id: '' })} 
               min={new Date().toISOString().split('T')[0]}
               max={new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0]}
               required 
@@ -222,7 +233,7 @@ const Reservas = () => {
               type="time" 
               className={`w-full p-3 border rounded ${errores.hora ? 'border-red-500' : ''}`} 
               value={reservaForm.hora} 
-              onChange={(e) => setReservaForm({ ...reservaForm, hora: e.target.value })} 
+              onChange={(e) => setReservaForm({ ...reservaForm, hora: e.target.value, mesa_id: '' })} 
               min="08:00"
               max="22:00"
               required 
@@ -239,6 +250,7 @@ const Reservas = () => {
               value={reservaForm.mesa_id} 
               onChange={(e) => setReservaForm({ ...reservaForm, mesa_id: e.target.value })} 
               required
+              disabled={!reservaForm.fecha || !reservaForm.hora}
             >
               <option value="">Selecciona una mesa</option>
               {mesasDisponibles.length === 0 ? (
