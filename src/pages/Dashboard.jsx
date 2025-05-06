@@ -6,7 +6,6 @@ import bg from '../assets/fondo-dashboard.png';
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [resumen, setResumen] = useState({ reservas: 0, mesas: 0, total: 0 });
   const [nombreSucursal, setNombreSucursal] = useState('');
   const usuario = JSON.parse(localStorage.getItem('usuario'));
   const tenantId = usuario?.tenant_id;
@@ -19,15 +18,6 @@ const Dashboard = () => {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   useEffect(() => {
-    const fetchResumen = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/reservas/resumen/${tenantId}`);
-        setResumen(res.data);
-      } catch (err) {
-        console.error('Error al obtener resumen:', err);
-      }
-    };
-
     const fetchSucursal = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/tenants/${tenantId}`);
@@ -42,13 +32,13 @@ const Dashboard = () => {
         const res = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/dashboard/estadisticas/${tenantId}`
         );
+        console.log('Estadísticas recibidas:', res.data); // Para depuración
         setEstadisticas(res.data);
       } catch (err) {
         console.error('Error al obtener estadísticas:', err);
       }
     };
 
-    fetchResumen();
     fetchSucursal();
     obtenerEstadisticas();
   }, [tenantId]);
@@ -79,21 +69,6 @@ const Dashboard = () => {
         </div>
 
         <h1 className="text-3xl font-bold text-white drop-shadow mb-6">Bienvenido a la sucursal: {nombreSucursal}</h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white/80 backdrop-blur-lg p-5 rounded-xl shadow-md">
-            <h2 className="text-lg font-semibold text-gray-700">Reservas Hoy</h2>
-            <p className="text-3xl font-bold text-orange-600 mt-2">{resumen.reservas}</p>
-          </div>
-          <div className="bg-white/80 backdrop-blur-lg p-5 rounded-xl shadow-md">
-            <h2 className="text-lg font-semibold text-gray-700">Mesas Disponibles</h2>
-            <p className="text-3xl font-bold text-green-500 mt-2">{resumen.mesas}</p>
-          </div>
-          <div className="bg-white/80 backdrop-blur-lg p-5 rounded-xl shadow-md">
-            <h2 className="text-lg font-semibold text-gray-700">Total del Mes</h2>
-            <p className="text-3xl font-bold text-purple-600 mt-2">{resumen.total}</p>
-          </div>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Tarjeta de Reservas */}
