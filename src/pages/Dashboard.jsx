@@ -36,6 +36,12 @@ const Dashboard = () => {
         setEstadisticas(res.data);
       } catch (err) {
         console.error('Error al obtener estadísticas:', err);
+        // Establecer valores por defecto en caso de error
+        setEstadisticas({
+          total_reservas: 0,
+          total_mesas: 0,
+          total_platos: 0
+        });
       }
     };
 
