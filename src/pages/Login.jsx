@@ -39,12 +39,21 @@ const Login = () => {
     try {
       if (isRegistering) {
         if (!tenantId) return setError('Selecciona una sucursal');
+        if (!email || !password) return setError('Todos los campos son requeridos');
+        
+        // Validar formato de correo
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          return setError('Ingresa un correo electrónico válido');
+        }
+
         await registrarUsuario({ email, password, rol: 'admin', tenant_id: tenantId });
         setMensaje('¡Usuario registrado con éxito!');
         const res = await loginUsuario({ email, password });
         localStorage.setItem('usuario', JSON.stringify(res.data.user));
         navigate('/dashboard');
       } else {
+        if (!email || !password) return setError('Todos los campos son requeridos');
         const res = await loginUsuario({ email, password });
         localStorage.setItem('usuario', JSON.stringify(res.data.user));
         navigate('/dashboard');
@@ -141,6 +150,9 @@ const Login = () => {
                 setIsRegistering(!isRegistering);
                 setMensaje('');
                 setError('');
+                setEmail('');
+                setPassword('');
+                setTenantId('');
               }}
             >
               {isRegistering ? 'Inicia sesión' : 'Regístrate'}

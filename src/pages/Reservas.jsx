@@ -51,9 +51,23 @@ const Reservas = () => {
   };
 
   const obtenerMesasDisponibles = async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/mesas/disponibles/${tenantId}`);
-    setMesasDisponibles(res.data);
+    if (!reservaForm.fecha || !reservaForm.hora) return;
+    
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/mesas/disponibles/${tenantId}`,
+        { params: { fecha: reservaForm.fecha, hora: reservaForm.hora } }
+      );
+      setMesasDisponibles(res.data);
+    } catch (err) {
+      console.error('Error al obtener mesas disponibles:', err);
+    }
   };
+
+  // Actualizar mesas disponibles cuando cambie la fecha u hora
+  useEffect(() => {
+    obtenerMesasDisponibles();
+  }, [reservaForm.fecha, reservaForm.hora]);
 
   const validarFormulario = () => {
     const nuevosErrores = {};
