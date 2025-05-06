@@ -62,7 +62,12 @@ const Reservas = () => {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/mesas/disponibles/${tenantId}`,
-        { params: { fecha: reservaForm.fecha, hora: reservaForm.hora } }
+        { 
+          params: { 
+            fecha: reservaForm.fecha, 
+            hora: reservaForm.hora 
+          }
+        }
       );
       setMesasDisponibles(res.data);
     } catch (err) {
@@ -72,7 +77,9 @@ const Reservas = () => {
 
   // Actualizar mesas disponibles cuando cambie la fecha u hora
   useEffect(() => {
-    obtenerMesasDisponibles();
+    if (reservaForm.fecha && reservaForm.hora) {
+      obtenerMesasDisponibles();
+    }
   }, [reservaForm.fecha, reservaForm.hora]);
 
   const validarFormulario = () => {
