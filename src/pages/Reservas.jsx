@@ -62,9 +62,9 @@ const Reservas = () => {
   const obtenerMesasDisponibles = async () => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/mesas/disponibles/${tenantId}`
+        `${import.meta.env.VITE_API_URL}/api/mesas/${tenantId}`
       );
-      console.log('Mesas disponibles:', res.data);
+      console.log('Mesas:', res.data);
       setMesasDisponibles(res.data);
     } catch (err) {
       console.error('Error al obtener mesas:', err);
@@ -393,7 +393,9 @@ const Reservas = () => {
               <p className="text-gray-700">Personas: {reserva.personas}</p>
               <p className="text-gray-700">Fecha: {reserva.fecha}</p>
               <p className="text-gray-700">Hora: {reserva.hora}</p>
-              <p className="text-gray-700">Mesa: #{reserva.numero_mesa || reserva.mesa_id || 'No asignada'}</p>
+              <p className="text-gray-700">
+                Mesa: {mesasDisponibles.find(m => m.id === reserva.mesa_id)?.numero || 'No asignada'}
+              </p>
               <p className={`text-sm font-medium ${
                 reserva.estado === 'confirmada' ? 'text-green-600' :
                 reserva.estado === 'cancelada' ? 'text-red-600' :
