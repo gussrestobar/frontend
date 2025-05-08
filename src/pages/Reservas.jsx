@@ -403,7 +403,7 @@ const Reservas = () => {
               }`}>
                 Estado: {reserva.estado}
               </p>
-              {reserva.platos && reserva.platos.length > 0 && (
+              {(reserva.platos && reserva.platos.length > 0) && (
                 <div className="mt-4 pt-4 border-t">
                   <h4 className="font-semibold text-gray-800 mb-2">Platos:</h4>
                   <ul className="space-y-1">
