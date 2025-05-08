@@ -205,7 +205,7 @@ const Reservas = () => {
     setEditandoId(reserva.id);
     if (reserva.platos) {
       setSelectedItems(reserva.platos);
-      setTotal(reserva.total || 0);
+      setTotal(Number(reserva.total) || 0);
     } else {
       setSelectedItems([]);
       setTotal(0);
