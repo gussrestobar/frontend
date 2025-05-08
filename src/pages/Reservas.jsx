@@ -204,7 +204,10 @@ const Reservas = () => {
     setReservaForm({ ...reserva });
     setEditandoId(reserva.id);
     if (reserva.platos) {
-      setSelectedItems(reserva.platos.map(p => ({ ...p, id: Number(p.id) })));
+      const seleccionados = menuItems.filter(menuItem =>
+        reserva.platos.some(p => Number(p.id) === Number(menuItem.id))
+      );
+      setSelectedItems(seleccionados);
       setTotal(Number(reserva.total) || 0);
     } else {
       setSelectedItems([]);
