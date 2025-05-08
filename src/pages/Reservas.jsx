@@ -417,7 +417,7 @@ const Reservas = () => {
                   <div className="mt-2 pt-2 border-t">
                     <div className="flex justify-between items-center font-bold">
                       <span>Total:</span>
-                      <span className="text-green-600">Bs {reserva.total?.toFixed(2) || '0.00'}</span>
+                      <span className="text-green-600">Bs {Number.isFinite(Number(reserva.total)) ? Number(reserva.total).toFixed(2) : '0.00'}</span>
                     </div>
                   </div>
                 </div>
