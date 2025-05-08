@@ -85,9 +85,9 @@ const Reservas = () => {
   // Agregar plato seleccionado
   const handleItemSelect = (item) => {
     setSelectedItems(prev => {
-      const exists = prev.find(i => i.id === item.id);
+      const exists = prev.find(i => Number(i.id) === Number(item.id));
       if (exists) {
-        return prev.filter(i => i.id !== item.id);
+        return prev.filter(i => Number(i.id) !== Number(item.id));
       }
       return [...prev, item];
     });
@@ -204,7 +204,7 @@ const Reservas = () => {
     setReservaForm({ ...reserva });
     setEditandoId(reserva.id);
     if (reserva.platos) {
-      setSelectedItems(reserva.platos);
+      setSelectedItems(reserva.platos.map(p => ({ ...p, id: Number(p.id) })));
       setTotal(Number(reserva.total) || 0);
     } else {
       setSelectedItems([]);
@@ -344,7 +344,7 @@ const Reservas = () => {
                 key={item.id}
                 onClick={() => handleItemSelect(item)}
                 className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
-                  selectedItems.find(i => i.id === item.id)
+                  selectedItems.find(i => Number(i.id) === Number(item.id))
                     ? 'border-orange-500 shadow-lg'
                     : 'border-gray-200 hover:border-orange-300'
                 }`}
