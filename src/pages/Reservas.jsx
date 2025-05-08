@@ -22,6 +22,9 @@ const Reservas = () => {
   const [editandoId, setEditandoId] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [reservaAEliminar, setReservaAEliminar] = useState(null);
+  const [menuItems, setMenuItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [total, setTotal] = useState(0);
 
   // Función para validar el nombre
   const validarNombre = (nombre) => {
@@ -68,6 +71,36 @@ const Reservas = () => {
       setMesasDisponibles([]);
     }
   };
+
+  // Obtener platos del menú
+  const obtenerMenu = async () => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/menu/${tenantId}`);
+      setMenuItems(res.data);
+    } catch (err) {
+      console.error('Error al obtener el menú:', err);
+    }
+  };
+
+  // Agregar plato seleccionado
+  const handleItemSelect = (item) => {
+    setSelectedItems(prev => {
+      const exists = prev.find(i => i.id === item.id);
+      if (exists) {
+        return prev.filter(i => i.id !== item.id);
+      }
+      return [...prev, item];
+    });
+  };
+
+  // Calcular total
+  useEffect(() => {
+    const newTotal = selectedItems.reduce((sum, item) => {
+      const precio = parseFloat(item.precio) || 0;
+      return sum + precio;
+    }, 0);
+    setTotal(newTotal);
+  }, [selectedItems]);
 
   // Cargar mesas al iniciar
   useEffect(() => {
@@ -141,13 +174,25 @@ const Reservas = () => {
     if (!validarFormulario()) return;
 
     try {
+      const reservaConPlatos = {
+        ...reservaForm,
+        platos: selectedItems.map(item => ({
+          id: item.id,
+          nombre: item.nombre,
+          precio: item.precio
+        })),
+        total: total
+      };
+
       if (editandoId) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/api/reservas/${editandoId}`, reservaForm);
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/reservas/${editandoId}`, reservaConPlatos);
         setEditandoId(null);
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/api/reservas`, reservaForm);
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/reservas`, reservaConPlatos);
       }
       setReservaForm({ cliente_nombre: '', personas: '', fecha: '', hora: '', mesa_id: '', estado: 'pendiente', tenant_id: tenantId });
+      setSelectedItems([]);
+      setTotal(0);
       setErrores({});
       await Promise.all([obtenerReservas(), obtenerMesasDisponibles()]);
     } catch (err) {
@@ -158,6 +203,13 @@ const Reservas = () => {
   const editarReserva = (reserva) => {
     setReservaForm({ ...reserva });
     setEditandoId(reserva.id);
+    if (reserva.platos) {
+      setSelectedItems(reserva.platos);
+      setTotal(reserva.total || 0);
+    } else {
+      setSelectedItems([]);
+      setTotal(0);
+    }
     setErrores({});
   };
 
@@ -179,6 +231,10 @@ const Reservas = () => {
 
   useEffect(() => {
     obtenerReservas();
+  }, []);
+
+  useEffect(() => {
+    obtenerMenu();
   }, []);
 
   const reservasFiltradas = reservas.filter((r) =>
@@ -280,6 +336,48 @@ const Reservas = () => {
           </button>
         </form>
 
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Selección de Platos</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            {menuItems.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => handleItemSelect(item)}
+                className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                  selectedItems.find(i => i.id === item.id)
+                    ? 'border-orange-500 shadow-lg'
+                    : 'border-gray-200 hover:border-orange-300'
+                }`}
+              >
+                <div className="p-4">
+                  <h3 className="font-medium text-gray-800">{item.nombre}</h3>
+                  <p className="text-sm text-gray-600">{item.categoria}</p>
+                  <p className="text-right font-bold text-green-600 mt-2">Bs {item.precio}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          {selectedItems.length > 0 && (
+            <div className="bg-white rounded-lg shadow p-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Platos Seleccionados:</h3>
+              <ul className="space-y-2">
+                {selectedItems.map((item) => (
+                  <li key={item.id} className="flex justify-between items-center">
+                    <span>{item.nombre}</span>
+                    <span className="font-medium">Bs {item.precio}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-4 pt-4 border-t">
+                <div className="flex justify-between items-center font-bold text-lg">
+                  <span>Total:</span>
+                  <span className="text-green-600">Bs {total.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
         <input
           type="text"
           placeholder="Buscar por cliente..."
@@ -303,6 +401,25 @@ const Reservas = () => {
               }`}>
                 Estado: {reserva.estado}
               </p>
+              {reserva.platos && reserva.platos.length > 0 && (
+                <div className="mt-4 pt-4 border-t">
+                  <h4 className="font-semibold text-gray-800 mb-2">Platos:</h4>
+                  <ul className="space-y-1">
+                    {reserva.platos.map((plato, idx) => (
+                      <li key={idx} className="flex justify-between text-sm">
+                        <span>{plato.nombre}</span>
+                        <span className="font-medium">Bs {plato.precio}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-2 pt-2 border-t">
+                    <div className="flex justify-between items-center font-bold">
+                      <span>Total:</span>
+                      <span className="text-green-600">Bs {reserva.total?.toFixed(2) || '0.00'}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="flex justify-between mt-4">
                 <button onClick={() => editarReserva(reserva)} className="text-sm text-blue-600 hover:underline">Editar</button>
                 <button onClick={() => confirmarEliminar(reserva)} className="text-sm text-red-600 hover:underline">Eliminar</button>
